@@ -1,0 +1,15 @@
+services:
+  app:
+    image: lha-backoffice:${IMAGE_TAG:-latest}
+    container_name: lha-backoffice
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_URL: "http://localhost:3000"
+        NEXT_PUBLIC_API_BACKEND_URL: "http://localhost:8081/api/v1"
+        NEXT_PUBLIC_API_FILE_URL: "http://localhost:3000"
+    ports:
+      - "${BACKOFFICE_PORT:-4007}:3000"
+    env_file:
+      - .env
