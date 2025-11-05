@@ -1,20 +1,35 @@
 name: CI
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - '**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - '**'
+
 jobs:
-  build-and-test:
+  build_and_test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          version: 10
-      - name: Install deps
-        run: pnpm install
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Lint
-        run: pnpm lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # (optionnel) si tu as des tests
       - name: Run tests
-        run: pnpm test
+        run: npm test
