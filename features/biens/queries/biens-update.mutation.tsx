@@ -5,25 +5,26 @@ import { useMutation } from "@tanstack/react-query";
 import { processAndValidateFormData } from "ak-zod-form-kit";
 import { CheckCircle2, X } from "lucide-react";
 import { modifierBiensAction } from "../actions/biens.action";
-import { BiensUpdateDTO, BiensUpdateSchema } from "../schema/biens.schema";
+import { BienUpdateDTO, BienUpdateSchema } from "../schema/biens.schema";
 import { useInvalidateBiensQuery } from "./index.query";
 
-export const useModifierBiensMutation = () => {
-  const invalidateBiensrQuery = useInvalidateBiensQuery();
+export const useModifierBienMutation = () => {
+  const invalidateBienQuery = useInvalidateBiensQuery();
   return useMutation({
     mutationFn: async ({
       id,
       data,
     }: {
       id: string;
-      data: BiensUpdateDTO;
+      data: BienUpdateDTO;
     }) => {
       // Validation des données
       const validation = processAndValidateFormData(
-        BiensUpdateSchema,
+        BienUpdateSchema,
         data,
         {
-          outputFormat: "object",
+          // For updates we need to support file uploads (images). Produce FormData so files are sent.
+          outputFormat: "formData",
         }
       );
       if (!validation.success) {
@@ -33,9 +34,10 @@ export const useModifierBiensMutation = () => {
         );
       }
 
+      // Ensure data is properly passed as FormData
       const result = await modifierBiensAction(
         id,
-        validation.data as BiensUpdateDTO
+        validation.data
       );
 
       if (!result.success) {
@@ -50,14 +52,14 @@ export const useModifierBiensMutation = () => {
       addToast({
         title: "Bien modifié avec succès",
         description: "Bien modifié avec succès",
-        promise: invalidateBiensrQuery(),
+        promise: invalidateBienQuery(),
         icon: <CheckCircle2 />,
         color: "success",
       });
     },
     onError: async (error) => {
       addToast({
-        title: "Erreur modification utilisateur:",
+        title: "Erreur modification du biens:",
         description: error.message,
         promise: Promise.reject(error),
         icon: <X />,

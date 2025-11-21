@@ -3,9 +3,9 @@ import { useQueryClient } from '@tanstack/react-query';
 // 1- Clé de cache
 export const biensKeyQuery = (...params: any[]) => {
     if (params.length === 0) {
-        return ['utilisateur'];
+        return ['biens'];
     }
-    return ['utilisateur', ...params];
+    return ['biens', ...params];
 };
 
 // 2. Créez un hook personnalisé pour l'invalidation

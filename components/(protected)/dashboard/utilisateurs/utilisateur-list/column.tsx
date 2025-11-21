@@ -6,11 +6,10 @@ import { SquarePen, Trash2 } from "lucide-react";
 import {
   IUtilisateur,
   UtilisateurRole,
-  UtilisateurStatus,
 } from "@/features/utilisateur/types/utilisateur.type";
 import { getUtilisateurRole } from "@/features/utilisateur/utils/getUtilisateurRole";
-import { getUtilisateurStatus } from "@/features/utilisateur/utils/getUtilisateurStatus";
 import { Button, Chip, Tooltip, User } from "@heroui/react";
+import { formatPhoneForHuman } from "@/utils/numericUtils";
 
 export const columns: ColumnDef<IUtilisateur>[] = [
   {
@@ -18,9 +17,7 @@ export const columns: ColumnDef<IUtilisateur>[] = [
     header: "Nom Complet",
     cell: ({ row }) => {
       const user = row.original;
-      return (
-        <User name={`${user.firstName} ${user.lastName}`}>{user.email}</User>
-      );
+      return <User name={user.fullname}>{user.email}</User>;
     },
   },
   {
@@ -29,9 +26,9 @@ export const columns: ColumnDef<IUtilisateur>[] = [
     cell: ({ row }) => <span>{row.getValue("email")}</span>,
   },
   {
-    accessorKey: "phoneNumber",
+    accessorKey: "phone",
     header: "Téléphone",
-    cell: ({ row }) => <span>{row.getValue("phoneNumber")}</span>,
+    cell: ({ row }) => <span>{formatPhoneForHuman(row.original.phone)}</span>,
   },
   {
     accessorKey: "role",
@@ -53,21 +50,12 @@ export const columns: ColumnDef<IUtilisateur>[] = [
     },
   },
   {
-    accessorKey: "status",
-    header: "Statut",
+    accessorKey: "createdAt",
+    header: "Date de création",
     cell: ({ row }) => {
-      const status = row.getValue<UtilisateurStatus>("status");
-      const statusName = getUtilisateurStatus(status) || "Inconnu";
-      return (
-        <Chip
-          className="capitalize"
-          color={statusName.color}
-          size="sm"
-          variant="flat"
-        >
-          {statusName.label}
-        </Chip>
-      );
+      const createdAt = new Date(row.getValue<string>("createdAt"));
+      const formattedDate = createdAt.toLocaleDateString("fr-FR");
+      return <span>{formattedDate}</span>;
     },
   },
   {
@@ -86,7 +74,7 @@ export const columns: ColumnDef<IUtilisateur>[] = [
 
       return (
         <div className="relative flex items-center gap-2">
-          <Tooltip content="Activer">
+          <Tooltip content="Modifier">
             <Button
               variant="bordered"
               isIconOnly
