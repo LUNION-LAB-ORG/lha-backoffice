@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  IconCreditCard,
   IconDotsVertical,
+  IconLock,
   IconLogout,
-  IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,83 +24,119 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { logout } from "@/features/auth/actions/auth.action";
+import { useSession } from "next-auth/react";
+import { UtilisateurProfilModal } from "@/components/(protected)/dashboard/utilisateurs/utilisateur-modal/utilisateur-profil-modal";
+import React from "react";
+import { UtilisateurUpdatePasswordModal } from "@/components/(protected)/dashboard/utilisateurs/utilisateur-modal/utilisateur-update-password-modal";
+import { useUtilisateurQuery } from "@/features/utilisateur/queries/utilisateur-detail.query";
+import { Loader } from "lucide-react";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
+  const [isProfilModalOpen, setIsProfilModalOpen] = React.useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = React.useState(false);
+
+  const session = useSession();
+  const userId = session.data?.user?.id;
+
+  const { data: user, isLoading: userIsLoading } = useUtilisateurQuery(userId);
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
-                </span>
-              </div>
-              <IconDotsVertical className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
-                  </span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={logout}>
-              <IconLogout />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          {userIsLoading ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Avatar className="h-8 w-8 rounded-lg grayscale">
+                    <AvatarFallback className="rounded-lg">
+                      {user?.fullname
+                        ? user.fullname
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                        : "CN"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">
+                      {user?.fullname}
+                    </span>
+                    <span className="text-muted-foreground truncate text-xs">
+                      {user?.email}
+                    </span>
+                  </div>
+                  <IconDotsVertical className="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                side={isMobile ? "bottom" : "right"}
+                align="end"
+                sideOffset={4}
+              >
+                <DropdownMenuLabel className="p-0 font-normal">
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarFallback className="rounded-lg">
+                        {user?.fullname
+                          ? user.fullname
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                          : "CN"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">
+                        {user?.fullname}
+                      </span>
+                      <span className="text-muted-foreground truncate text-xs">
+                        {user?.email}
+                      </span>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => setIsProfilModalOpen(true)}>
+                    <IconUserCircle />
+                    Profil
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setIsPasswordModalOpen(true)}
+                  >
+                    <IconLock />
+                    Sécurité
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={logout}>
+                  <IconLogout />
+                  Déconnexion
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </SidebarMenuItem>
+      </SidebarMenu>
+      {user?.id && (
+        <UtilisateurProfilModal
+          isOpen={isProfilModalOpen}
+          setIsOpen={setIsProfilModalOpen}
+          userId={user?.id}
+        />
+      )}
+      <UtilisateurUpdatePasswordModal
+        isOpen={isPasswordModalOpen}
+        setIsOpen={setIsPasswordModalOpen}
+      />
+    </>
   );
 }

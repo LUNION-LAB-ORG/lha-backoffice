@@ -39,7 +39,7 @@ export default async function proxy(req: NextRequest) {
       const encodedCallbackUrl = encodeURIComponent(callbackUrl);
 
       // Création de l'URL de connexion
-      const loginUrl = new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, req.url);
+      const loginUrl = new URL(`/?callbackUrl=${encodedCallbackUrl}`, req.url);
 
       // Redirection vers la page de connexion
       return NextResponse.redirect(loginUrl);

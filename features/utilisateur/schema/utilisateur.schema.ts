@@ -35,7 +35,38 @@ export const UtilisateurUpdateSchema = UtilisateurAddSchema.partial().extend({
       message: "Le mot de passe doit contenir au moins 8 caractères",
     }),
 });
+
+export const UtilisateurUpdateProfilSchema = UtilisateurUpdateSchema.omit({
+  role: true,
+  password: true,
+});
+
+export const UtilisateurUpdatePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string({ message: "Le mot de passe actuel est requis" })
+      .min(8, "Le mot de passe actuel doit contenir au moins 8 caractères"),
+
+    newPassword: z
+      .string({ message: "Le nouveau mot de passe est requis" })
+      .min(8, "Le nouveau mot de passe doit contenir au moins 8 caractères"),
+
+    confirmNewPassword: z.string({
+      message: "La confirmation du nouveau mot de passe est requise",
+    }),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Les nouveaux mots de passe ne correspondent pas",
+  });
+
 export type UtilisateurUpdateDTO = z.infer<typeof UtilisateurUpdateSchema>;
+
+export type UtilisateurUpdateProfilDTO = z.infer<
+  typeof UtilisateurUpdateProfilSchema
+>;
+export type UtilisateurUpdatePasswordDTO = z.infer<
+  typeof UtilisateurUpdatePasswordSchema
+>;
 
 // Schema pour la modification du role d'un utilisateur
 export const UtilisateurRoleSchema = UtilisateurAddSchema.pick({ role: true });

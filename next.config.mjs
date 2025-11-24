@@ -11,16 +11,16 @@ const nextConfig = {
         hostname: "localhost:3000",
       },
       {
-        protocol: 'https',
-        hostname: 'dvsxt5681pvqm.cloudfront.net',
+        protocol: "https",
+        hostname: "dvsxt5681pvqm.cloudfront.net",
       },
     ],
-    
   },
-   experimental: {
+  experimental: {
     serverActions: {
-      bodySizeLimit: '200mb',
+      bodySizeLimit: "200mb",
     },
+    authInterrupts: true,
   },
 };
 

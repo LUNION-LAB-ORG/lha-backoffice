@@ -1,6 +1,6 @@
 "use client";
 
-import { type Icon, IconCirclePlusFilled } from "@tabler/icons-react";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,17 +10,16 @@ import {
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import { NavItem } from "@/components/(protected)/dashboard/common/data";
+import { filterNavigationByRole } from "@/lib/rbac/rbac-navigation";
+import { UtilisateurRole } from "@/features/utilisateur/types/utilisateur.type";
+import { useSession } from "next-auth/react";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: Icon;
-  }[];
-}) {
+export function NavMain({ items }: { items: NavItem[] }) {
   const router = useRouter();
+  const session = useSession();
+  const userRole =
+    (session.data?.user?.role as UtilisateurRole) || UtilisateurRole.AGENT;
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -39,7 +38,7 @@ export function NavMain({
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
-          {items.map((item) => (
+          {filterNavigationByRole(items, userRole).map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 onClick={() => router.push(item.url)}

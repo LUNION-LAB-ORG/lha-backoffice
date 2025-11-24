@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { authAPI } from "@/features/auth/apis/auth.api";
 import { JWT } from "next-auth/jwt";
+import { UtilisateurRole } from "@/features/utilisateur/types/utilisateur.type";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
@@ -27,12 +28,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: credentials.email.toString(),
             password: credentials.password.toString(),
           });
-          console.log("Réponse de l'API d'authentification :", response);
+
           return {
             id: response.id,
             email: response.email,
             name: response.fullname,
-            role: response.role,
+            role: response.role as UtilisateurRole,
             photoBucket: response.photoBucket,
             photoKey: response.photoKey,
             token: response.token,

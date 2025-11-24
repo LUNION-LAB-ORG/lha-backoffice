@@ -1,3 +1,5 @@
+import { AppPermissions } from "@/lib/rbac/app-permissions";
+
 export enum UtilisateurRole {
   AGENT = "AGENT",
   ADMIN = "ADMIN",
@@ -56,3 +58,12 @@ export interface IUtilisateurDeleteResponse {
   success: true;
   message: string;
 }
+
+export const ROLE_PERMISSIONS = {
+  [UtilisateurRole.ADMIN]: [...Object.values(AppPermissions)],
+  [UtilisateurRole.AGENT]: [
+    AppPermissions.CREATE_PROPERTY,
+    AppPermissions.READ_PROPERTY,
+    AppPermissions.UPDATE_PROPERTY,
+  ],
+};
