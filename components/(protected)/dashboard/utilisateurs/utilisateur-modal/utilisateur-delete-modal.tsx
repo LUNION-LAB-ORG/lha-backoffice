@@ -42,7 +42,7 @@ export function UtilisateurDeleteModal({
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           <h1 className="text-lg font-medium text-primary">
-            {`Supprimer ${utilisateur?.firstName} ${utilisateur?.lastName} ?`}
+            {`Supprimer ${utilisateur?.fullname} ?`}
           </h1>
           <p className="text-sm text-gray-500">
             Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cet utilisateur
@@ -51,7 +51,12 @@ export function UtilisateurDeleteModal({
         </ModalHeader>
         <ModalBody />
         <ModalFooter>
-          <Button color="danger" variant="light" onPress={handleClose} disabled={isPending}>
+          <Button
+            color="danger"
+            variant="light"
+            onPress={handleClose}
+            disabled={isPending}
+          >
             Annuler
           </Button>
           <Button

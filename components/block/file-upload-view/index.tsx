@@ -111,7 +111,7 @@ export default function FileUploadView({
                       {elt.file.name}
                     </p>
                     <p className="text-muted-foreground truncate text-xs">
-                      {formatBytes(elt.file.size)}
+                      {formatBytes(elt.file.size ?? 0)}
                     </p>
                   </div>
                 </div>

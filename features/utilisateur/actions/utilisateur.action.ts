@@ -2,8 +2,16 @@
 
 import { ActionResponse, PaginatedResponse } from "@/types/api.type";
 import { utilisateurAPI } from "../apis/utilisateur.api";
-import { UtilisateurAddDTO, UtilisateurUpdateDTO } from "../schema/utilisateur.schema";
-import { IUtilisateur, IUtilisateurDeleteResponse, IUtilisateursParams } from "../types/utilisateur.type";
+import {
+  UtilisateurAddDTO,
+  UtilisateurUpdateDTO,
+} from "../schema/utilisateur.schema";
+import {
+  IUtilisateur,
+  IUtilisateurAddUpdateResponse,
+  IUtilisateurDeleteResponse,
+  IUtilisateursParams,
+} from "../types/utilisateur.type";
 import { handleServerActionError } from "@/utils/handleServerActionError";
 
 export const obtenirTousUtilisateursAction = async (params: IUtilisateursParams): Promise<ActionResponse<PaginatedResponse<IUtilisateur>>> => {
@@ -32,7 +40,7 @@ export const obtenirUnUtilisateurAction = async (id: string): Promise<ActionResp
     }
 }
 
-export const ajouterUtilisateurAction = async (formdata: UtilisateurAddDTO): Promise<ActionResponse<IUtilisateur>> => {
+export const ajouterUtilisateurAction = async (formdata: UtilisateurAddDTO): Promise<ActionResponse<IUtilisateurAddUpdateResponse>> => {
     try {
         const data = await utilisateurAPI.ajouterUtilisateur(formdata);
         return {
@@ -45,7 +53,7 @@ export const ajouterUtilisateurAction = async (formdata: UtilisateurAddDTO): Pro
     }
 }
 
-export const modifierProfilAction = async (id: string, formdata: UtilisateurUpdateDTO): Promise<ActionResponse<IUtilisateur>> => {
+export const modifierProfilAction = async (id: string, formdata: UtilisateurUpdateDTO): Promise<ActionResponse<IUtilisateurAddUpdateResponse>> => {
     try {
         const data = await utilisateurAPI.modifierProfil(id, formdata);
         return {

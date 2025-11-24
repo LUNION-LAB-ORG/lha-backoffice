@@ -33,7 +33,7 @@ export function HeaderFilter({
 }) {
   // Compter les filtres actifs
   const activeFiltersCount = Object.values(filters).filter(
-    (value) => value && value !== ""
+    (value) => value && value !== "",
   ).length;
 
   // Fonction pour reset tous les filtres
@@ -50,9 +50,7 @@ export function HeaderFilter({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <Title>Biens</Title>
-          <Subtitle>
-            Gérez vos Biens et les permissions
-          </Subtitle>
+          <Subtitle>Gérez vos Biens et les permissions</Subtitle>
         </div>
         <Button
           color="primary"
@@ -88,9 +86,9 @@ export function HeaderFilter({
                 <Input
                   label="Téléphone"
                   placeholder="Filtrer par téléphone..."
-                  value={filters.phoneNumber}
+                  value={filters.phone}
                   onChange={(e) =>
-                    handleTextFilterChange("phoneNumber", e.target.value)
+                    handleTextFilterChange("phone", e.target.value)
                   }
                   variant="bordered"
                 />
@@ -156,14 +154,14 @@ export function HeaderFilter({
                     </Chip>
                   )}
 
-                  {filters.phoneNumber && (
+                  {filters.phone && (
                     <Chip
                       size="sm"
                       variant="flat"
                       color="primary"
-                      onClose={() => handleTextFilterChange("phoneNumber", "")}
+                      onClose={() => handleTextFilterChange("phone", "")}
                     >
-                      Tél: {filters.phoneNumber}
+                      Tél: {filters.phone}
                     </Chip>
                   )}
 

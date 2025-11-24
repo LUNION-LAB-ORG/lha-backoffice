@@ -48,6 +48,7 @@ export interface IUtilisateurAddUpdateResponse
     | "updatedAt"
     | "deletedAt"
   > {
+  password: string;
   generatedPassword: string;
 }
 

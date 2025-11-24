@@ -9,7 +9,7 @@ async function ModifierBienPage({
 }) {
   const { id } = await params;
   void prefetchBienDetailQuery(id);
-  return <BienCreateForm bienId={id} mode="edit" />;
+  return <BienCreateForm />;
 }
 
 export default ModifierBienPage;

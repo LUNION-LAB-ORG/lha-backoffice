@@ -453,8 +453,11 @@ export const useFileUpload = (
 };
 
 // Helper function to format bytes to human-readable format
-export const formatBytes = (bytes: number, decimals = 2): string => {
-  if (bytes === 0) return "0 Bytes";
+export const formatBytes = (
+  bytes: number | undefined,
+  decimals = 2,
+): string => {
+  if (!bytes || bytes === 0) return "0 Bytes";
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
