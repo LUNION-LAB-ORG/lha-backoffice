@@ -1,33 +1,53 @@
+name: Deploy (pm2)
+
+# Déploiement en production via SSH + PM2.
+# Déclenché sur push vers la branche par défaut (main/master).
+#
+# Secrets requis (Settings > Secrets and variables > Actions) :
+#   SSH_HOST      -> hôte/IP du VPS
+#   SSH_USER      -> utilisateur SSH
+#   SSH_KEY       -> clé privée SSH (format PEM)
+#   SSH_PORT      -> (optionnel) port SSH, défaut 22
+#   DEPLOY_PATH   -> (optionnel) chemin du repo sur le serveur, défaut ~/lha-backoffice
+
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
       - main
+      - master
 
 jobs:
   deploy:
+    name: Deploy to VPS (pm2)
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.8.0
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Deploy to VPS
+      - name: Deploy via SSH + pm2
+        env:
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          REPO_NAME=${{ github.event.repository.name }}
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/$REPO_NAME
-          git reset --hard HEAD
-          git pull origin main
-          docker compose down
-          docker compose build
-          docker compose up -d
-          EOF
+          PORT="${SSH_PORT:-22}"
+          ssh -o StrictHostKeyChecking=no -p "$PORT" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "DEPLOY_PATH='${DEPLOY_PATH}' BRANCH='${{ github.ref_name }}' bash -s" <<'DEPLOY'
+          set -euo pipefail
+          APP_DIR="${DEPLOY_PATH:-$HOME/lha-backoffice}"
+          echo "==> Deploying lha-backoffice in $APP_DIR (branch $BRANCH)"
+          cd "$APP_DIR"
+
+          git fetch --all --prune
+          git reset --hard "origin/$BRANCH"
+
+          corepack enable || true
+          pnpm install --frozen-lockfile
+          pnpm build
+
+          pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+          pm2 save
+          echo "==> Done"
+          DEPLOY
